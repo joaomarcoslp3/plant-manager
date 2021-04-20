@@ -1,11 +1,18 @@
 import React from 'react'
 import { SafeAreaView, View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native'
+import { useNavigation } from '@react-navigation/core'
 import { Feather } from '@expo/vector-icons'
 
 import wateringImage from '../assets/watering.png'
 import { colors, fonts } from '../styles'
 
 export const Welcome = () => {
+  const { navigate } = useNavigation()
+
+  function handleStart () {
+    navigate('UserIdentification')
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.wrapper}>
@@ -17,7 +24,7 @@ export const Welcome = () => {
           Não esqueça mais de regar suas plantas. Nós cuidamos de lembrar você sempre que precisar.
         </Text>
 
-        <TouchableOpacity style={styles.button} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={handleStart}>
           <Feather name='chevron-right' style={styles.buttonIcon} />
         </TouchableOpacity>
       </View>
