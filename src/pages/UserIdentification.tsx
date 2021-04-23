@@ -3,6 +3,7 @@ import { View, StyleSheet, SafeAreaView, Text, TextInput, KeyboardAvoidingView, 
 import { useNavigation } from '@react-navigation/core'
 import { Button } from '../components'
 import { colors, fonts } from '../styles'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export function UserIdentification () {
   const [name, setName] = useState<string>('')
@@ -31,12 +32,24 @@ export function UserIdentification () {
     setName(value)
   }
 
-  function handleSubmit () {
+  async function handleSubmit () {
     if (!name) {
       setError(true) 
       return
     }
-    navigate('Confirmation')
+
+    try {
+      await AsyncStorage.setItem('@plantmanager:user', name)
+      navigate('Confirmation', {
+        title: 'Prontinho',
+        subtitle: 'Agora vamos começar a cuidar das suas plantinhas com muito cuidado.',
+        buttonTitle: 'Começar',
+        icon: 'smile',
+        nextScreen: 'PlantSelect'
+      })
+    } catch (err) {
+      alert('Não foi possível salvar o nome do usuário. 😥')
+    }
   }
 
   return (

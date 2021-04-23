@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigation } from '@react-navigation/core'
 import { View, StyleSheet, Text, FlatList, ActivityIndicator } from 'react-native'
 
 import api from '../services/api'
 import { colors, fonts } from '../styles'
+import { PlantsProps } from '../libs/storage'
 import { EnviromentButton, Header, Load, PlantCardPrimary } from '../components'
 
 interface EnviromentsProps {
@@ -10,23 +12,10 @@ interface EnviromentsProps {
   title: string
 }
 
-interface PlantsProps {
-  id: number,
-  name: string,
-  about: string,
-  water_tips: string,
-  photo: string,
-  environments: [string],
-  frequency: {
-    times: number,
-    repeat_every: string
-  }
-}
-
 export function PlantSelect () {
+  const { navigate } = useNavigation()
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
-  const [loadedAll, setLoadedAll] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
   const [plants, setPlants] = useState<PlantsProps[]>([])
   const [enviromentSelected, setEnviromentSelected] = useState('all')
@@ -66,6 +55,10 @@ export function PlantSelect () {
     getPlants()
   }
 
+  function handlePlantSelect(plant: PlantsProps) {
+    navigate('PlantSave', {plant})
+  }
+
   useEffect(() => {
     async function getEnviroments () {
       const { data } = await api.get('plants_environments?_sort=title&_order=asc')
@@ -97,6 +90,7 @@ export function PlantSelect () {
       <View>
         <FlatList 
           data={enviroments}
+          keyExtractor={(item) => String(item.key)}
           renderItem={({ item }) => (
             <EnviromentButton 
               label={item.title} 
@@ -114,9 +108,10 @@ export function PlantSelect () {
         <FlatList 
           data={filteredPlants}
           renderItem={({ item }) => (
-            <PlantCardPrimary data={item}/>
+            <PlantCardPrimary data={item} onPress={() => handlePlantSelect(item)}/>
           )}
           showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => String(item.id)}
           numColumns={2}
           onEndReachedThreshold={0.1}
           onEndReached={({ distanceFromEnd }) => handleFetchMore(distanceFromEnd)}
